@@ -56,15 +56,3 @@ jobs:
           context: . # Build context is the current directory
           push: true # Push the image to a registry
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/kraken-app:latest # Tag format: username/repo:tag
-          
-deploy:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Deploy to Server (Simulated)
-        run: |
-          echo "Simulating deployment to production server..."
-          echo "Pulling Docker image: ${{ secrets.DOCKERHUB_USERNAME }}/my-devops-app:latest"
-          echo "Running container on the server..."
-          echo "Deployment simulated successfully! Your app would now be live."
