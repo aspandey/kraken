@@ -14,5 +14,6 @@ jobs:
       - name: Build and Push Docker Image
         run: docker build . -t ashishpandey2014/kraken:latest
       - name: push image
+        run: |
         docker login -u ashishpandey2014 -p ${{ secrets.DOCKER_HUB_TOKEN }}
-        run: docker push ashishpandey2014/kraken:latest
+        docker push ashishpandey2014/kraken:latest
