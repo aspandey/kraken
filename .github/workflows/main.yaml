@@ -3,23 +3,23 @@ name: CI/CD Pipeline for Python Flask App
 on:
   push:
     branches:
-      - main # Trigger on pushes to the main branch
+      - main
   pull_request:
     branches:
-      - main # Trigger on pull requests targeting the main branch
+      - main
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest # The type of runner that the job will run on
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4 # Action to checkout your repository code
+        uses: actions/checkout@v4
       
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12' # Specify the Python version
+          python-version: '3.12'
 
       - name: Install dependencies
         run: |
@@ -32,8 +32,11 @@ jobs:
           echo "Tests passed successfully!"
 
       - name: Build and Push Docker Image
-        run: docker build . -t ashishpandey2014/kraken:latest
+        run: docker build . -t ${{ secrets.DOCKER_HUB_USER }}/kraken:latest
+        # run: docker build . -t ashishpandey2014/kraken:latest
       - name: Login to Docker Hub
-        run: docker login -u ashishpandey2014 -p ${{ secrets.DOCKER_HUB_TOKEN }}
+        run: docker login -u ${{ secrets.DOCKER_HUB_USER }} -p ${{ secrets.DOCKER_HUB_TOKEN }}
+        # run: docker login -u ashishpandey2014 -p ${{ secrets.DOCKER_HUB_TOKEN }}
       - name: push image
-        run: docker push ashishpandey2014/kraken:latest
+        run: docker push ${{ secrets.DOCKER_HUB_USER }}/kraken:latest
+        # run: docker push ashishpandey2014/kraken:latest
