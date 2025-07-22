@@ -40,3 +40,44 @@ jobs:
       - name: push image
         run: docker push ${{ secrets.DOCKER_HUB_USER }}/kraken:latest
         # run: docker push ashishpandey2014/kraken:latest
+  
+  deploy:
+    needs: build-and-test
+    runs-on: self-hosted 
+
+    steps:
+      - name: Checkout Code (on self-hosted runner)
+        uses: actions/checkout@v4
+        
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_HUB_USER }} -p ${{ secrets.DOCKER_HUB_TOKEN }}
+      
+      - name: Deploy Docker Image to VM
+        run: |
+          echo "Starting deployment on local VM..."
+          # Define your Docker image name
+          IMAGE_NAME="${{ secrets.DOCKER_HUB_USER }}/kraken:latest"
+
+          echo "Pulling latest Docker image: $IMAGE_NAME"
+          docker pull $IMAGE_NAME
+
+          echo "Stopping existing container (if any)..."
+          # Stop and remove any old container gracefully
+          # The '|| true' ensures the script doesn't fail if the container doesn't exist
+          docker stop kraken || true
+          docker rm kraken || true
+
+          echo "Running new container..."
+          # Run the new container, mapping VM port 80 to container port 5050
+          # -d runs in detached mode (background)
+          # --name gives it a memorable name
+          # -p 80:5050 maps host port 80 to container port 5050
+          # --env allows passing environment variables to the container (optional, but good practice)
+          docker run -d \
+            --name kraken \
+            -p 80:5050 \
+            -e GREETING_MESSAGE="Hello from DevOps CD!" \
+            $IMAGE_NAME
+
+          echo "Deployment successful! Check your VM's IP address."
+          echo "Your app should now be accessible at http://<Your_VM_IP_Address>/"
