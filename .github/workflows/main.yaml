@@ -43,13 +43,10 @@ jobs:
 
       - name: Build and Push Docker Image
         run: docker build . --platform linux/arm64 -t ${{ secrets.DOCKER_HUB_USER }}/kraken:latest
-        # run: docker build . -t ashishpandey2014/kraken:latest
       - name: Login to Docker Hub
         run: docker login -u ${{ secrets.DOCKER_HUB_USER }} -p ${{ secrets.DOCKER_HUB_TOKEN }}
-        # run: docker login -u ashishpandey2014 -p ${{ secrets.DOCKER_HUB_TOKEN }}
       - name: push image
         run: docker push ${{ secrets.DOCKER_HUB_USER }}/kraken:latest
-        # run: docker push ashishpandey2014/kraken:latest
   
   deploy:
     needs: build-and-test
@@ -65,7 +62,7 @@ jobs:
       - name: Deploy Docker Image to VM
         run: |
           echo "Starting deployment on local VM..."
-          # Define your Docker image name
+          # Define Docker image name
           IMAGE_NAME="${{ secrets.DOCKER_HUB_USER }}/kraken:latest"
 
           echo "Pulling latest Docker image: $IMAGE_NAME"
@@ -88,6 +85,8 @@ jobs:
             -p 80:5050 \
             -e GREETING_MESSAGE="Hello from DevOps CD!" \
             $IMAGE_NAME
+          
+          docker run hello-world
 
           echo "Deployment successful! Check your VM's IP address."
           echo "Your app should now be accessible at http://<Your_VM_IP_Address>/"
